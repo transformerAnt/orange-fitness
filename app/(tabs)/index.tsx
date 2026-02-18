@@ -1,98 +1,516 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
-
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+import React from "react";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { Design } from "@/constants/design";
+export default (props:any) => {
+	return (
+		<SafeAreaProvider 
+			style={{
+				flex: 1,
+				backgroundColor: Design.colors.background,
+			}}>
+			<ScrollView  
+				style={{
+					flex: 1,
+					backgroundColor: Design.colors.background,
+					borderRadius: 40,
+				}}>
+				<View 
+					style={{
+						backgroundColor: Design.colors.background,
+						paddingTop: 12,
+					}}>
+					<View 
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+							marginBottom: 35,
+							marginLeft: 26,
+							marginRight: 14,
+						}}>
+						<Text 
+							style={{
+								color: Design.colors.ink,
+								fontSize: 15,
+								fontFamily: Design.typography.fontSemiBold,
+							}}>
+							{"9:41"}
+						</Text>
+						<Image
+							source = {{uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/qf48wcn1_expires_30_days.png"}} 
+							resizeMode = {"stretch"}
+							style={{
+								width: 66,
+								height: 11,
+							}}
+						/>
+					</View>
+					<View 
+						style={{
+							alignSelf: "flex-start",
+							marginBottom: 36,
+							marginLeft: 16,
+						}}>
+						<Text 
+							style={{
+								color: Design.colors.muted,
+								fontSize: 12,
+								fontFamily: Design.typography.fontMedium,
+								marginBottom: 10,
+								marginRight: 64,
+							}}>
+							{"EVERYDAY WE'RE MUSCLE'N"}
+						</Text>
+						<View 
+							style={{
+								alignSelf: "flex-start",
+								flexDirection: "row",
+								alignItems: "center",
+							}}>
+							<Text 
+							style={{
+								color: Design.colors.ink,
+								fontSize: 26,
+								fontFamily: Design.typography.fontBold,
+								marginRight: 12,
+							}}>
+								{"Hello, Kakashi"}
+							</Text>
+							<Image
+								source = {{uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/86ngt23u_expires_30_days.png"}} 
+								resizeMode = {"stretch"}
+								style={{
+									width: 24,
+									height: 24,
+								}}
+							/>
+						</View>
+					</View>
+					<View 
+						style={{
+							marginBottom: 36,
+							marginHorizontal: 15,
+						}}>
+						<View 
+							style={{
+								marginBottom: 42,
+							}}>
+							<Text 
+							style={{
+								color: Design.colors.ink,
+								fontSize: 20,
+								fontFamily: Design.typography.fontSemiBold,
+								marginBottom: 16,
+							}}>
+								{"My Plan"}
+							</Text>
+							<View 
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									marginBottom: 16,
+								}}>
+								<TouchableOpacity 
+									onPress={() => router.push("/workouts")}
+									style={{
+										flex: 1,
+										backgroundColor: Design.colors.accentSoft,
+										borderRadius: 16,
+										paddingVertical: 12,
+										paddingLeft: 12,
+										marginRight: 16,
+									}}>
+									<Image
+										source = {{uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/0qvrwlux_expires_30_days.png"}} 
+										resizeMode = {"stretch"}
+										style={{
+											width: 40,
+											height: 40,
+											marginBottom: 13,
+										}}
+									/>
+									<View 
+										style={{
+											alignSelf: "flex-start",
+										}}>
+										<Text 
+											style={{
+												color: Design.colors.ink,
+												fontSize: 18,
+												fontFamily: Design.typography.fontSemiBold,
+												marginBottom: 2,
+											}}>
+											{"Workout"}
+										</Text>
+										<Text 
+											style={{
+												color: Design.colors.muted,
+												fontSize: 14,
+												fontFamily: Design.typography.fontMedium,
+												marginRight: 28,
+											}}>
+											{"2 hours"}
+										</Text>
+									</View>
+								</TouchableOpacity>
+								<View 
+									style={{
+										borderColor: Design.colors.line,
+										borderRadius: 16,
+										borderWidth: 1,
+										paddingVertical: 12,
+										paddingLeft: 12,
+										paddingRight: 30,
+										backgroundColor: Design.colors.surface,
+									}}>
+									<Image
+										source = {{uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/fo6dqfz4_expires_30_days.png"}} 
+										resizeMode = {"stretch"}
+										style={{
+											width: 40,
+											height: 40,
+											marginBottom: 13,
+										}}
+									/>
+									<View 
+										style={{
+											alignSelf: "flex-start",
+										}}>
+										<Text 
+											style={{
+												color: Design.colors.ink,
+												fontSize: 18,
+												fontFamily: Design.typography.fontSemiBold,
+												marginBottom: 2,
+											}}>
+											{"Meditate"}
+										</Text>
+										<Text 
+											style={{
+												color: Design.colors.muted,
+												fontSize: 14,
+												fontFamily: Design.typography.fontMedium,
+												marginRight: 30,
+											}}>
+											{"2 hours"}
+										</Text>
+									</View>
+								</View>
+							</View>
+							<View 
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+								}}>
+								<View 
+									style={{
+										flex: 1,
+										flexDirection: "row",
+										justifyContent: "space-between",
+										alignItems: "center",
+										borderColor: Design.colors.line,
+										borderRadius: 16,
+										borderWidth: 1,
+										paddingVertical: 16,
+										paddingHorizontal: 12,
+										marginRight: 16,
+										backgroundColor: Design.colors.surface,
+									}}>
+									<View >
+										<Text 
+											style={{
+												color: Design.colors.ink,
+												fontSize: 18,
+												fontFamily: Design.typography.fontSemiBold,
+												marginBottom: 2,
+											}}>
+											{"Food"}
+										</Text>
+										<Text 
+											style={{
+												color: Design.colors.muted,
+												fontSize: 14,
+												fontFamily: Design.typography.fontMedium,
+											}}>
+											{"2 hours"}
+										</Text>
+									</View>
+									<Image
+										source = {{uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/qfyv6j71_expires_30_days.png"}} 
+										resizeMode = {"stretch"}
+										style={{
+											width: 40,
+											height: 40,
+										}}
+									/>
+								</View>
+								<TouchableOpacity 
+									style={{
+										flex: 1,
+										alignItems: "center",
+										backgroundColor: Design.colors.ink,
+										borderRadius: 16,
+										paddingVertical: 21,
+									}} onPress={() => router.push("/workouts")}>
+									<View >
+										<Text 
+											style={{
+												color: "#FFFFFF",
+												fontSize: 18,
+												fontFamily: Design.typography.fontSemiBold,
+												marginBottom: 4,
+											}}>
+											{"Let's Go"}
+										</Text>
+										<View 
+											style={{
+												width: 61,
+												height: 4,
+												backgroundColor: Design.colors.accent,
+												borderRadius: 10,
+											}}>
+										</View>
+									</View>
+								</TouchableOpacity>
+							</View>
+						</View>
+						<View >
+							<Text 
+								style={{
+									color: Design.colors.ink,
+									fontSize: 20,
+									fontFamily: Design.typography.fontSemiBold,
+									marginBottom: 16,
+								}}>
+								{"Weekly Stats"}
+							</Text>
+							<View 
+								style={{
+									alignItems: "center",
+									borderColor: Design.colors.line,
+									borderRadius: 20,
+									borderWidth: 1,
+									paddingVertical: 15,
+									backgroundColor: Design.colors.surface,
+								}}>
+								<View 
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										marginBottom: 25,
+									}}>
+									<Text 
+										style={{
+											color: Design.colors.ink,
+											fontSize: 14,
+											fontFamily: Design.typography.fontSemiBold,
+											marginRight: 9,
+										}}>
+										{"Most Active:"}
+									</Text>
+									<Text 
+										style={{
+											color: Design.colors.muted,
+											fontSize: 14,
+											fontFamily: Design.typography.fontSemiBold,
+										}}>
+										{"Friday"}
+									</Text>
+								</View>
+								<View 
+									style={{
+										alignSelf: "stretch",
+										flexDirection: "row",
+										marginHorizontal: 18,
+									}}>
+									<View 
+										style={{
+											height: 56,
+											flex: 1,
+											backgroundColor: Design.colors.accentSoft,
+											borderColor: Design.colors.muted,
+											borderTopLeftRadius: 8,
+											borderTopRightRadius: 8,
+											borderWidth: 1,
+											marginTop: 60,
+											marginRight: 22,
+										}}>
+									</View>
+									<View 
+										style={{
+											height: 67,
+											flex: 1,
+											backgroundColor: Design.colors.accentSoft,
+											borderColor: Design.colors.muted,
+											borderTopLeftRadius: 8,
+											borderTopRightRadius: 8,
+											borderWidth: 1,
+											marginTop: 49,
+											marginRight: 23,
+										}}>
+									</View>
+									<View 
+										style={{
+											height: 43,
+											flex: 1,
+											backgroundColor: Design.colors.accentSoft,
+											borderColor: Design.colors.muted,
+											borderTopLeftRadius: 8,
+											borderTopRightRadius: 8,
+											borderWidth: 1,
+											marginTop: 73,
+											marginRight: 23,
+										}}>
+									</View>
+									<View 
+										style={{
+											height: 82,
+											flex: 1,
+											backgroundColor: Design.colors.accentSoft,
+											borderColor: Design.colors.muted,
+											borderTopLeftRadius: 8,
+											borderTopRightRadius: 8,
+											borderWidth: 1,
+											marginTop: 34,
+											marginRight: 22,
+										}}>
+									</View>
+									<View 
+										style={{
+											height: 116,
+											flex: 1,
+											backgroundColor: Design.colors.accent,
+											borderColor: Design.colors.ink,
+											borderTopLeftRadius: 8,
+											borderTopRightRadius: 8,
+											borderWidth: 1,
+											marginRight: 23,
+										}}>
+									</View>
+									<View 
+										style={{
+											height: 75,
+											flex: 1,
+											backgroundColor: Design.colors.accentSoft,
+											borderColor: Design.colors.muted,
+											borderTopLeftRadius: 8,
+											borderTopRightRadius: 8,
+											borderWidth: 1,
+											marginTop: 41,
+											marginRight: 23,
+										}}>
+									</View>
+									<View 
+										style={{
+											height: 56,
+											flex: 1,
+											backgroundColor: Design.colors.accentSoft,
+											borderColor: Design.colors.muted,
+											borderTopLeftRadius: 8,
+											borderTopRightRadius: 8,
+											borderWidth: 1,
+											marginTop: 60,
+										}}>
+									</View>
+								</View>
+								<View 
+									style={{
+										height: 1,
+										alignSelf: "stretch",
+										backgroundColor: Design.colors.ink,
+										marginBottom: 5,
+									}}>
+								</View>
+								<View 
+									style={{
+										alignSelf: "stretch",
+										flexDirection: "row",
+										alignItems: "center",
+										marginHorizontal: 16,
+									}}>
+									<Text 
+										style={{
+											color: Design.colors.ink,
+											fontSize: 12,
+											textAlign: "center",
+											marginRight: 27,
+											flex: 1,
+										}}>
+										{"Mon"}
+									</Text>
+									<Text 
+										style={{
+											color: Design.colors.ink,
+											fontSize: 12,
+											textAlign: "center",
+											marginRight: 27,
+											flex: 1,
+										}}>
+										{"Tue"}
+									</Text>
+									<Text 
+										style={{
+											color: Design.colors.ink,
+											fontSize: 12,
+											textAlign: "center",
+											marginRight: 27,
+											flex: 1,
+										}}>
+										{"Wed"}
+									</Text>
+									<Text 
+										style={{
+											color: Design.colors.ink,
+											fontSize: 12,
+											textAlign: "center",
+											marginRight: 31,
+											flex: 1,
+										}}>
+										{"Thu"}
+									</Text>
+									<Text 
+										style={{
+											color: Design.colors.ink,
+											fontSize: 12,
+											marginRight: 35,
+										}}>
+										{"Fri"}
+									</Text>
+									<Text 
+										style={{
+											color: Design.colors.ink,
+											fontSize: 12,
+											textAlign: "center",
+											marginRight: 30,
+											flex: 1,
+										}}>
+										{"Sat"}
+									</Text>
+									<Text 
+										style={{
+											color: Design.colors.ink,
+											fontSize: 12,
+											textAlign: "center",
+											flex: 1,
+										}}>
+										{"Sun"}
+									</Text>
+								</View>
+							</View>
+						</View>
+					</View>
+				</View>
+			</ScrollView>
+		</SafeAreaProvider>
+	)
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+
+
+
+
+
+
+

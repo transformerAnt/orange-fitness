@@ -1,15 +1,21 @@
 {
   "expo": {
-    "name": "my-app",
-    "slug": "my-app",
+    "name": "fitness app",
+    "slug": "fitness-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "fitnessapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.tarunpahade.fitnessapp",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow access to camera for meal photos.",
+        "NSPhotoLibraryUsageDescription": "Allow access to photos for meal uploads.",
+        "NSLocationWhenInUseUsageDescription": "Allow access to location for run tracking."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,8 +24,16 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.RECORD_AUDIO"
+      ],
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.tarunpahade.fitnessapp"
     },
     "web": {
       "output": "static",
@@ -27,6 +41,14 @@
     },
     "plugins": [
       "expo-router",
+      "expo-image-picker",
+      "expo-location",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.25617601367-dkcs2s2gao9nfber2iv4lh6h3hkr97ld"
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -38,11 +60,18 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "363bdaea-cdbb-4d26-9b1c-839d960e8530"
+      }
     }
   }
 }
