@@ -1,26 +1,128 @@
-import React from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { router } from "expo-router";
-import { Design } from "@/constants/design";
+import { Design } from '@/constants/design'
+import { SignedIn, SignedOut, useSSO, useUser } from '@clerk/clerk-expo'
+import * as AuthSession from 'expo-auth-session'
+import { Link, router } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
+import React, { useCallback, useEffect } from 'react'
+import { Alert, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+
+const CELEB_WORKOUTS = [
+  {
+    id: 'nba-power',
+    title: 'NBA Power',
+    subtitle: 'Explosive athleticism + vertical drive',
+    tag: 'Basketball',
+    tint: 'rgba(255, 107, 61, 0.14)',
+  },
+  {
+    id: 'gridiron-strength',
+    title: 'Gridiron Strength',
+    subtitle: 'Football speed & contact readiness',
+    tag: 'Football',
+    tint: 'rgba(34, 197, 94, 0.14)',
+  },
+  {
+    id: 'court-speed',
+    title: 'Court Speed',
+    subtitle: 'Tennis agility & reaction work',
+    tag: 'Tennis',
+    tint: 'rgba(79, 70, 229, 0.12)',
+  },
+  {
+    id: 'olympian-engine',
+    title: 'Olympian Engine',
+    subtitle: 'Stamina, form, and full-body output',
+    tag: 'Olympics',
+    tint: 'rgba(245, 158, 11, 0.14)',
+  },
+  {
+    id: 'aesthetic-stoic',
+    title: 'Aesthetic Stoic',
+    subtitle: 'Lean sculpt + mobility discipline',
+    tag: 'Stoic',
+    tint: 'rgba(148, 163, 184, 0.22)',
+  },
+]
+
+const useWarmUpBrowser = () => {
+  useEffect(() => {
+    if (Platform.OS !== 'android') return
+    void WebBrowser.warmUpAsync()
+    return () => {
+      void WebBrowser.coolDownAsync()
+    }
+  }, [])
+}
+
+WebBrowser.maybeCompleteAuthSession()
+
 export default (props:any) => {
-	return (
-		<SafeAreaProvider 
-			style={{
-				flex: 1,
-				backgroundColor: Design.colors.background,
-			}}>
-			<ScrollView  
-				style={{
-					flex: 1,
-					backgroundColor: Design.colors.background,
-					borderRadius: 40,
-				}}>
-				<View 
-					style={{
-						backgroundColor: Design.colors.background,
-						paddingTop: 12,
-					}}>
+  useWarmUpBrowser()
+  const { user } = useUser()
+  const { startSSOFlow } = useSSO()
+
+  const onGooglePress = useCallback(async () => {
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: 'oauth_google',
+        redirectUrl: AuthSession.makeRedirectUri({ scheme: 'fitnessapp' }),
+      })
+
+      if (createdSessionId) {
+        await setActive?.({ session: createdSessionId })
+      }
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2))
+    }
+  }, [startSSOFlow])
+
+  const email =
+    user?.primaryEmailAddress?.emailAddress ||
+    user?.emailAddresses?.[0]?.emailAddress ||
+    ''
+  const beforeAt = email.split('@')[0] || ''
+  const greetingName = beforeAt || 'there'
+
+  return (
+    <>
+      <SignedOut>
+        <View style={styles.container}>
+          <Text style={styles.title}>Welcome!</Text>
+          <Link href="/sign-in">
+            <Text style={styles.link}>Sign in</Text>
+          </Link>
+          <Link href="/sign-up">
+            <Text style={styles.link}>Sign up</Text>
+          </Link>
+          <View style={styles.oneTapContainer}>
+            <Pressable
+              style={({ pressed }) => [styles.googleButton, pressed && styles.buttonPressed]}
+              onPress={onGooglePress}
+            >
+              <Text style={styles.googleButtonText}>Continue with Google</Text>
+            </Pressable>
+          </View>
+        </View>
+      </SignedOut>
+
+      <SignedIn>
+        <SafeAreaProvider 
+          style={{
+            flex: 1,
+            backgroundColor: Design.colors.background,
+          }}>
+          <ScrollView  
+            style={{
+              flex: 1,
+              backgroundColor: Design.colors.background,
+              borderRadius: 40,
+            }}>
+            <View 
+              style={{
+                backgroundColor: Design.colors.background,
+                paddingTop: 12,
+              }}>
 					<View 
 						style={{
 							flexDirection: "row",
@@ -76,7 +178,7 @@ export default (props:any) => {
 								fontFamily: Design.typography.fontBold,
 								marginRight: 12,
 							}}>
-								{"Hello, Kakashi"}
+								{`Hello, ${greetingName}`}
 							</Text>
 							<Image
 								source = {{uri: "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/86ngt23u_expires_30_days.png"}} 
@@ -155,7 +257,8 @@ export default (props:any) => {
 										</Text>
 									</View>
 								</TouchableOpacity>
-								<View 
+								<TouchableOpacity
+									onPress={() => Alert.alert('Coming soon', 'Snacks section is under development.')}
 									style={{
 										borderColor: Design.colors.line,
 										borderRadius: 16,
@@ -185,7 +288,7 @@ export default (props:any) => {
 												fontFamily: Design.typography.fontSemiBold,
 												marginBottom: 2,
 											}}>
-											{"Meditate"}
+											{"Snacks"}
 										</Text>
 										<Text 
 											style={{
@@ -197,14 +300,15 @@ export default (props:any) => {
 											{"2 hours"}
 										</Text>
 									</View>
-								</View>
+								</TouchableOpacity>
 							</View>
 							<View 
 								style={{
 									flexDirection: "row",
 									alignItems: "center",
 								}}>
-								<View 
+								<TouchableOpacity
+									onPress={() => router.push('/diet-plan')}
 									style={{
 										flex: 1,
 										flexDirection: "row",
@@ -245,7 +349,7 @@ export default (props:any) => {
 											height: 40,
 										}}
 									/>
-								</View>
+								</TouchableOpacity>
 								<TouchableOpacity 
 									style={{
 										flex: 1,
@@ -276,241 +380,133 @@ export default (props:any) => {
 								</TouchableOpacity>
 							</View>
 						</View>
-						<View >
-							<Text 
-								style={{
-									color: Design.colors.ink,
-									fontSize: 20,
-									fontFamily: Design.typography.fontSemiBold,
-									marginBottom: 16,
-								}}>
-								{"Weekly Stats"}
-							</Text>
-							<View 
-								style={{
-									alignItems: "center",
-									borderColor: Design.colors.line,
-									borderRadius: 20,
-									borderWidth: 1,
-									paddingVertical: 15,
-									backgroundColor: Design.colors.surface,
-								}}>
-								<View 
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										marginBottom: 25,
-									}}>
-									<Text 
-										style={{
-											color: Design.colors.ink,
-											fontSize: 14,
-											fontFamily: Design.typography.fontSemiBold,
-											marginRight: 9,
-										}}>
-										{"Most Active:"}
-									</Text>
-									<Text 
-										style={{
-											color: Design.colors.muted,
-											fontSize: 14,
-											fontFamily: Design.typography.fontSemiBold,
-										}}>
-										{"Friday"}
-									</Text>
-								</View>
-								<View 
-									style={{
-										alignSelf: "stretch",
-										flexDirection: "row",
-										marginHorizontal: 18,
-									}}>
-									<View 
-										style={{
-											height: 56,
-											flex: 1,
-											backgroundColor: Design.colors.accentSoft,
-											borderColor: Design.colors.muted,
-											borderTopLeftRadius: 8,
-											borderTopRightRadius: 8,
-											borderWidth: 1,
-											marginTop: 60,
-											marginRight: 22,
-										}}>
-									</View>
-									<View 
-										style={{
-											height: 67,
-											flex: 1,
-											backgroundColor: Design.colors.accentSoft,
-											borderColor: Design.colors.muted,
-											borderTopLeftRadius: 8,
-											borderTopRightRadius: 8,
-											borderWidth: 1,
-											marginTop: 49,
-											marginRight: 23,
-										}}>
-									</View>
-									<View 
-										style={{
-											height: 43,
-											flex: 1,
-											backgroundColor: Design.colors.accentSoft,
-											borderColor: Design.colors.muted,
-											borderTopLeftRadius: 8,
-											borderTopRightRadius: 8,
-											borderWidth: 1,
-											marginTop: 73,
-											marginRight: 23,
-										}}>
-									</View>
-									<View 
-										style={{
-											height: 82,
-											flex: 1,
-											backgroundColor: Design.colors.accentSoft,
-											borderColor: Design.colors.muted,
-											borderTopLeftRadius: 8,
-											borderTopRightRadius: 8,
-											borderWidth: 1,
-											marginTop: 34,
-											marginRight: 22,
-										}}>
-									</View>
-									<View 
-										style={{
-											height: 116,
-											flex: 1,
-											backgroundColor: Design.colors.accent,
-											borderColor: Design.colors.ink,
-											borderTopLeftRadius: 8,
-											borderTopRightRadius: 8,
-											borderWidth: 1,
-											marginRight: 23,
-										}}>
-									</View>
-									<View 
-										style={{
-											height: 75,
-											flex: 1,
-											backgroundColor: Design.colors.accentSoft,
-											borderColor: Design.colors.muted,
-											borderTopLeftRadius: 8,
-											borderTopRightRadius: 8,
-											borderWidth: 1,
-											marginTop: 41,
-											marginRight: 23,
-										}}>
-									</View>
-									<View 
-										style={{
-											height: 56,
-											flex: 1,
-											backgroundColor: Design.colors.accentSoft,
-											borderColor: Design.colors.muted,
-											borderTopLeftRadius: 8,
-											borderTopRightRadius: 8,
-											borderWidth: 1,
-											marginTop: 60,
-										}}>
-									</View>
-								</View>
-								<View 
-									style={{
-										height: 1,
-										alignSelf: "stretch",
-										backgroundColor: Design.colors.ink,
-										marginBottom: 5,
-									}}>
-								</View>
-								<View 
-									style={{
-										alignSelf: "stretch",
-										flexDirection: "row",
-										alignItems: "center",
-										marginHorizontal: 16,
-									}}>
-									<Text 
-										style={{
-											color: Design.colors.ink,
-											fontSize: 12,
-											textAlign: "center",
-											marginRight: 27,
-											flex: 1,
-										}}>
-										{"Mon"}
-									</Text>
-									<Text 
-										style={{
-											color: Design.colors.ink,
-											fontSize: 12,
-											textAlign: "center",
-											marginRight: 27,
-											flex: 1,
-										}}>
-										{"Tue"}
-									</Text>
-									<Text 
-										style={{
-											color: Design.colors.ink,
-											fontSize: 12,
-											textAlign: "center",
-											marginRight: 27,
-											flex: 1,
-										}}>
-										{"Wed"}
-									</Text>
-									<Text 
-										style={{
-											color: Design.colors.ink,
-											fontSize: 12,
-											textAlign: "center",
-											marginRight: 31,
-											flex: 1,
-										}}>
-										{"Thu"}
-									</Text>
-									<Text 
-										style={{
-											color: Design.colors.ink,
-											fontSize: 12,
-											marginRight: 35,
-										}}>
-										{"Fri"}
-									</Text>
-									<Text 
-										style={{
-											color: Design.colors.ink,
-											fontSize: 12,
-											textAlign: "center",
-											marginRight: 30,
-											flex: 1,
-										}}>
-										{"Sat"}
-									</Text>
-									<Text 
-										style={{
-											color: Design.colors.ink,
-											fontSize: 12,
-											textAlign: "center",
-											flex: 1,
-										}}>
-										{"Sun"}
-									</Text>
-								</View>
-							</View>
-						</View>
 					</View>
-				</View>
-			</ScrollView>
-		</SafeAreaProvider>
-	)
+
+					<View
+						style={{
+							marginTop: 28,
+							marginHorizontal: 15,
+						}}>
+						<Text
+							style={{
+								color: Design.colors.ink,
+								fontSize: 20,
+								fontFamily: Design.typography.fontSemiBold,
+								marginBottom: 6,
+							}}>
+							{"Signature Programs"}
+						</Text>
+						<Text
+							style={{
+								color: Design.colors.muted,
+								fontSize: 12,
+								fontFamily: Design.typography.fontMedium,
+								marginBottom: 14,
+							}}>
+							{"Light, athlete-inspired weekly plans"}
+						</Text>
+						<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+							<View style={{ flexDirection: "row", gap: 14, paddingRight: 18 }}>
+								{CELEB_WORKOUTS.map((item) => (
+									<Pressable
+										key={item.id}
+										onPress={() => router.push(`/celebrity/${item.id}`)}
+										style={({ pressed }) => [
+											{
+												width: 190,
+												borderRadius: 18,
+												backgroundColor: item.tint,
+												padding: 16,
+												borderWidth: 1,
+												borderStyle: "dotted",
+												borderColor: "rgba(16, 18, 20, 0.18)",
+											},
+											pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 },
+										]}>
+										<Text
+											style={{
+												color: Design.colors.ink,
+												fontSize: 16,
+												fontFamily: Design.typography.fontSemiBold,
+												marginBottom: 6,
+											}}>
+											{item.title}
+										</Text>
+										<Text
+											style={{
+												color: Design.colors.muted,
+												fontSize: 12,
+												fontFamily: Design.typography.fontMedium,
+												marginBottom: 12,
+											}}>
+											{item.subtitle}
+										</Text>
+										<View
+											style={{
+												alignSelf: "flex-start",
+												backgroundColor: "rgba(255,255,255,0.7)",
+												paddingHorizontal: 10,
+												paddingVertical: 4,
+												borderRadius: 999,
+												borderWidth: 1,
+												borderColor: "rgba(16, 18, 20, 0.08)",
+											}}>
+											<Text
+												style={{
+													color: Design.colors.ink,
+													fontSize: 11,
+													fontFamily: Design.typography.fontSemiBold,
+												}}>
+												{item.tag}
+											</Text>
+										</View>
+									</Pressable>
+								))}
+							</View>
+						</ScrollView>
+					</View>
+              </View>
+            </ScrollView>
+        </SafeAreaProvider>
+      </SignedIn>
+    </>
+  )
 }
 
-
-
-
-
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    gap: 16,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: Design.colors.ink,
+  },
+  link: {
+    color: Design.colors.ink,
+    fontSize: 16,
+  },
+  oneTapContainer: {
+    gap: 8,
+  },
+  googleButton: {
+    backgroundColor: '#0a7ea4',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  googleButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  buttonPressed: {
+    opacity: 0.7,
+  },
+})
 
 
 

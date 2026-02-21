@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Image,
@@ -9,11 +10,10 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 
+import { Design } from '@/constants/design';
 import { apiGet } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
-import { Design } from '@/constants/design';
 
 type Plan = { id: string; name: string };
 type ExerciseDbItem = {
@@ -178,18 +178,7 @@ export default function WorkoutsScreen() {
     <SafeAreaProvider style={{ flex: 1, backgroundColor: Design.colors.background }}>
       <ScrollView style={{ flex: 1, backgroundColor: Design.colors.background }}>
         <View style={{ paddingHorizontal: Design.spacing.lg, paddingTop: 20, paddingBottom: 40 }}>
-          <Text
-            style={{
-              color: Design.colors.ink,
-              fontSize: 26,
-              fontFamily: Design.typography.fontBold,
-              marginBottom: 6,
-            }}>
-            Workouts
-          </Text>
-          <Text style={{ color: Design.colors.muted, fontSize: 14, marginBottom: 18 }}>
-            Choose a body part and pick an exercise from ExerciseDB data.
-          </Text>
+          
 
           <Text
             style={{

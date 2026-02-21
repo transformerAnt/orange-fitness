@@ -10,6 +10,14 @@ create table if not exists public.profiles (
   display_name text,
   age integer,
   gender text,
+  height_cm numeric(6,2),
+  weight_kg numeric(6,2),
+  calorie_goal integer,
+  protein_goal integer,
+  carbs_goal integer,
+  fat_goal integer,
+  activity_level text,
+  goal text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -83,6 +91,9 @@ create table if not exists public.food_logs (
   protein_g integer,
   carbs_g integer,
   fat_g integer,
+  health_score integer,
+  corrected boolean default false,
+  meal_type text,
   created_at timestamptz not null default now()
 );
 

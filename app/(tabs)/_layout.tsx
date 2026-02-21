@@ -11,20 +11,20 @@ type TabBarProps = {
 };
 
 const TAB_CONFIG: Record<string, { label: string; icon: string }> = {
-  index: {
-    label: 'Dashboard',
-    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/m374bjld_expires_30_days.png',
+  running: {
+    label: 'Workout',
+    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/d0wz7m8f_expires_30_days.png',
   },
   calories: {
     label: 'Calories',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/9ggbov0j_expires_30_days.png',
   },
-  running: {
-    label: 'Running',
-    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/d0wz7m8f_expires_30_days.png',
+  index: {
+    label: 'Dashboard',
+    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/m374bjld_expires_30_days.png',
   },
   account: {
-    label: 'Account',
+    label: 'AI Chat',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/4c1kElRr0g/wk2egzhu_expires_30_days.png',
   },
 };
@@ -34,9 +34,9 @@ function CustomTabBar({ state, descriptors, navigation }: TabBarProps) {
     <View
       style={{
         backgroundColor: Design.colors.background,
-        paddingHorizontal: Design.spacing.lg,
-        paddingBottom: Design.spacing.md,
-        paddingTop: Design.spacing.sm,
+        paddingHorizontal: Design.spacing.md,
+        paddingBottom: 6,
+        paddingTop: 6,
       }}>
       <View
         style={{
@@ -44,8 +44,8 @@ function CustomTabBar({ state, descriptors, navigation }: TabBarProps) {
           alignItems: 'center',
           backgroundColor: Design.colors.surface,
           borderRadius: Design.radius.xl,
-          paddingVertical: 12,
-          paddingHorizontal: 18,
+          paddingVertical: 8,
+          paddingHorizontal: 10,
           borderColor: Design.colors.line,
           borderWidth: 1,
           ...Design.shadow.lift,
@@ -62,24 +62,24 @@ function CustomTabBar({ state, descriptors, navigation }: TabBarProps) {
               style={{
                 flex: 1,
                 alignItems: 'center',
-                paddingVertical: 6,
+                paddingVertical: 4,
               }}>
               <View
                 style={{
-                  width: 36,
-                  height: 36,
+                  width: 42,
+                  height: 42,
                   borderRadius: Design.radius.pill,
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: isFocused ? Design.colors.accentSoft : 'transparent',
                 }}>
-                <Image source={{ uri: config?.icon }} resizeMode="contain" style={{ width: 20, height: 20 }} />
+                <Image source={{ uri: config?.icon }} resizeMode="contain" style={{ width: 24, height: 24 }} />
               </View>
               <Text
                 style={{
                   color: isFocused ? Design.colors.ink : Design.colors.muted,
-                  fontSize: 11,
-                  marginTop: 6,
+                  fontSize: 10,
+                  marginTop: 4,
                   fontFamily: isFocused ? Design.typography.fontSemiBold : Design.typography.fontMedium,
                 }}>
                 {label}
@@ -87,11 +87,11 @@ function CustomTabBar({ state, descriptors, navigation }: TabBarProps) {
               {isFocused ? (
                 <View
                   style={{
-                    width: 6,
-                    height: 6,
+                    width: 5,
+                    height: 5,
                     borderRadius: 999,
                     backgroundColor: Design.colors.accent,
-                    marginTop: 6,
+                    marginTop: 4,
                   }}
                 />
               ) : null}
@@ -110,10 +110,10 @@ export default function TabLayout() {
         headerShown: false,
       }}
       tabBar={(props: any) => <CustomTabBar {...props} />}>
-      <Tabs.Screen name="index" options={{ title: 'Dashboard' }} />
+      <Tabs.Screen name="index" options={{ title: 'Workout' }} />
       <Tabs.Screen name="calories" options={{ title: 'Calories' }} />
-      <Tabs.Screen name="running" options={{ title: 'Running' }} />
-      <Tabs.Screen name="account" options={{ title: 'Account' }} />
+      <Tabs.Screen name="running" options={{ title: 'Dashboard' }} />
+      <Tabs.Screen name="ai chat" options={{ title: 'AI Chat' }} />
     </Tabs>
   );
 }

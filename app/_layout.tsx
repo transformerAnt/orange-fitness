@@ -1,3 +1,5 @@
+import { ClerkProvider } from '@clerk/clerk-expo';
+import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import {
   PlusJakartaSans_400Regular,
   PlusJakartaSans_500Medium,
@@ -52,7 +54,7 @@ export default function RootLayout() {
       setSessionChecked(true);
     };
     checkSession();
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setSignedIn(!!session);
     });
     return () => authListener.subscription.unsubscribe();
@@ -76,12 +78,18 @@ export default function RootLayout() {
   
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+               <ClerkProvider tokenCache={tokenCache}>
+
+
       <Stack>
+
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
+
+      </ClerkProvider>
     </ThemeProvider>
   );
 }
