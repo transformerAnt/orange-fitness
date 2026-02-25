@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Luminia",
-    "slug": "luminia",
+    "slug": "luma-fitness",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,7 +14,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Allow access to camera for meal photos.",
         "NSPhotoLibraryUsageDescription": "Allow access to photos for meal uploads.",
-        "NSLocationWhenInUseUsageDescription": "Allow access to location for run tracking."
+        "NSLocationWhenInUseUsageDescription": "Allow access to location for run tracking.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -71,8 +72,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "363bdaea-cdbb-4d26-9b1c-839d960e8530"
+        "projectId": "74dcb5bb-3437-487d-bd95-cc886f75710e"
       }
-    }
+    },
+    "owner": "tarunpahade"
   }
 }
