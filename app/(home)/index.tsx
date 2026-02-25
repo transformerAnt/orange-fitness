@@ -28,7 +28,7 @@ export default function Page() {
     try {
       const { createdSessionId, setActive } = await startSSOFlow({
         strategy: 'oauth_google',
-        redirectUrl: AuthSession.makeRedirectUri({ scheme: 'fitnessapp' }),
+        redirectUrl: AuthSession.makeRedirectUri({ scheme: 'luminia' }),
       })
 
       if (createdSessionId) {
@@ -90,10 +90,10 @@ export default function Page() {
       <SignedOut>
         <ThemedView style={styles.container}>
           <ThemedText type="title">Welcome!</ThemedText>
-          <Link href="/sign-in">
+          <Link href="/(auth)/sign-in">
             <ThemedText>Sign in</ThemedText>
           </Link>
-          <Link href="/sign-up">
+          <Link href="/(auth)/sign-up">
             <ThemedText>Sign up</ThemedText>
           </Link>
           <View style={styles.oneTapContainer}>

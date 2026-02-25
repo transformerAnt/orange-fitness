@@ -1,15 +1,16 @@
 import { useAuth } from '@clerk/clerk-expo';
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Stack, useSegments } from 'expo-router';
 import React from 'react';
 
 export default function AuthLayout() {
   const { isSignedIn } = useAuth()
+  const segments = useSegments()
 
-  if (isSignedIn) {
+  const isOnboarding = segments[1] === 'onboarding'
+
+  if (isSignedIn && !isOnboarding) {
     return <Redirect href={'/'} />
   }
-
-
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }

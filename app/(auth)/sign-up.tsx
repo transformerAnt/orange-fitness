@@ -1,18 +1,49 @@
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
-import { useSignUp } from '@clerk/clerk-expo'
+import { useSignUp, useSSO } from '@clerk/clerk-expo'
+import * as AuthSession from 'expo-auth-session'
 import { Link, useRouter } from 'expo-router'
 import * as React from 'react'
-import { Pressable, StyleSheet, TextInput, View } from 'react-native'
+import * as WebBrowser from 'expo-web-browser'
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native'
+
+const useWarmUpBrowser = () => {
+  React.useEffect(() => {
+    if (Platform.OS !== 'android') return
+    void WebBrowser.warmUpAsync()
+    return () => {
+      void WebBrowser.coolDownAsync()
+    }
+  }, [])
+}
+
+WebBrowser.maybeCompleteAuthSession()
 
 export default function Page() {
+  useWarmUpBrowser()
   const { isLoaded, signUp, setActive } = useSignUp()
+  const { startSSOFlow } = useSSO()
   const router = useRouter()
 
   const [emailAddress, setEmailAddress] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [pendingVerification, setPendingVerification] = React.useState(false)
   const [code, setCode] = React.useState('')
+
+  const onGooglePress = React.useCallback(async () => {
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: 'oauth_google',
+        redirectUrl: AuthSession.makeRedirectUri({ scheme: 'luminia' }),
+      })
+
+      if (createdSessionId) {
+        await setActive?.({ session: createdSessionId })
+      }
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2))
+    }
+  }, [startSSOFlow])
 
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
@@ -108,6 +139,12 @@ export default function Page() {
       <ThemedText type="title" style={styles.title}>
         Sign up
       </ThemedText>
+      <Pressable
+        style={({ pressed }) => [styles.googleButton, pressed && styles.buttonPressed]}
+        onPress={onGooglePress}
+      >
+        <ThemedText style={styles.googleButtonText}>Continue with Google</ThemedText>
+      </Pressable>
       <ThemedText style={styles.label}>Email address</ThemedText>
       <TextInput
         style={styles.input}
@@ -187,6 +224,18 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.5,
+  },
+  googleButton: {
+    backgroundColor: '#0a7ea4',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  googleButtonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
   buttonText: {
     color: '#fff',

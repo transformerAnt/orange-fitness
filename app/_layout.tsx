@@ -1,20 +1,22 @@
-import { ClerkProvider } from '@clerk/clerk-expo';
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import {
-  PlusJakartaSans_400Regular,
-  PlusJakartaSans_500Medium,
-  PlusJakartaSans_600SemiBold,
-  PlusJakartaSans_700Bold, useFonts
-} from '@expo-google-fonts/plus-jakarta-sans';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_900Black,
+  useFonts
+} from '@expo-google-fonts/inter';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { supabase } from '@/lib/supabase';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { setSupabaseAccessToken } from '@/lib/supabase';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,16 +26,12 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const devBypassAuth = process.env.EXPO_PUBLIC_DEV_BYPASS_AUTH === 'true';
-  const colorScheme = useColorScheme();
-  const [sessionChecked, setSessionChecked] = useState(false);
-  const [signedIn, setSignedIn] = useState(false);
-  const segments = useSegments();
-  const router = useRouter();
   const [fontsLoaded] = useFonts({
-    PlusJakartaSans_400Regular,
-    PlusJakartaSans_500Medium,
-    PlusJakartaSans_600SemiBold,
-    PlusJakartaSans_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_900Black,
   });
 
   useEffect(() => {
@@ -42,54 +40,66 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
-  useEffect(() => {
-    if (devBypassAuth) {
-      setSignedIn(true);
-      setSessionChecked(true);
-      return;
-    }
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSignedIn(!!data.session);
-      setSessionChecked(true);
-    };
-    checkSession();
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      setSignedIn(!!session);
-    });
-    return () => authListener.subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!sessionChecked) return;
-    if (devBypassAuth) return;
-    const inAuthGroup = segments[0] === '(auth)';
-    if (!signedIn && !inAuthGroup) {
-      router.replace('/(auth)/sign-in');
-    }
-    if (signedIn && inAuthGroup) {
-      router.replace('/(tabs)');
-    }
-  }, [sessionChecked, signedIn, segments, router]);
-
-  if (!fontsLoaded || !sessionChecked) {
+  if (!fontsLoaded) {
     return null;
   }
-  
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-               <ClerkProvider tokenCache={tokenCache}>
+    <SafeAreaProvider>
+      <ThemeProvider value={DefaultTheme}>
+        <ClerkProvider
+          tokenCache={tokenCache}
+          publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        >
+          <RootNavigation devBypassAuth={devBypassAuth} />
+          <StatusBar style="dark" />
+        </ClerkProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}
 
+function RootNavigation({ devBypassAuth }: { devBypassAuth: boolean }) {
+  const { isLoaded, isSignedIn, getToken } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
 
-      <Stack>
+  useEffect(() => {
+    if (!isLoaded && !devBypassAuth) return;
+    const inAuthGroup = segments[0] === '(auth)';
+    const signedIn = devBypassAuth ? true : isSignedIn;
 
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
+    if (!signedIn && !inAuthGroup) {
+      router.replace('/(auth)/sign-in');
+    } else if (signedIn && inAuthGroup) {
+      router.replace('/(tabs)');
+    }
+  }, [isLoaded, isSignedIn, segments, router, devBypassAuth]);
 
-      </ClerkProvider>
-    </ThemeProvider>
+  useEffect(() => {
+    let active = true;
+    const syncToken = async () => {
+      if (!isLoaded) return;
+      if (!isSignedIn) {
+        if (active) setSupabaseAccessToken(null);
+        return;
+      }
+      const token = await getToken();
+      if (active) setSupabaseAccessToken(token ?? null);
+    };
+    syncToken();
+    return () => {
+      active = false;
+    };
+  }, [isLoaded, isSignedIn, getToken]);
+  if (!isLoaded && !devBypassAuth) {
+    return null;
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+    </Stack>
   );
 }

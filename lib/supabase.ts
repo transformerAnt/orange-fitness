@@ -19,6 +19,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase env vars are missing. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
 }
 
+let clerkAccessToken: string | null = null;
+
+export const setSupabaseAccessToken = (token: string | null) => {
+  clerkAccessToken = token;
+};
+
 export const supabase = !supabaseUrl || !supabaseAnonKey
   ? ({
       auth: {
@@ -38,6 +44,7 @@ export const supabase = !supabaseUrl || !supabaseAnonKey
       }),
     } as any)
   : createClient(supabaseUrl, supabaseAnonKey, {
+      accessToken: async () => clerkAccessToken,
       auth: {
         storage: AsyncStorage,
         autoRefreshToken: true,

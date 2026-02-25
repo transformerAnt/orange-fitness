@@ -1,5 +1,6 @@
 import { Design } from '@/constants/design';
 import { supabase } from '@/lib/supabase';
+import { useUser } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -22,6 +23,7 @@ export default function OnboardingScreen() {
   const [gender, setGender] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { user } = useUser();
 
   const completeOnboarding = async () => {
     setErrorMsg(null);
@@ -31,11 +33,13 @@ export default function OnboardingScreen() {
       return;
     }
 
+    if (!user?.id) {
+      setErrorMsg('Authentication error. Please try signing in again.');
+      return;
+    }
+
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) throw new Error('No user found.');
 
       const { error } = await supabase
         .from('profiles')
